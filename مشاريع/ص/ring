@@ -1,0 +1,20 @@
+
+===========================================================================
+Warning (W1): Unrecognized option: ض
+===========================================================================
+Ring version 1.23.0 
+2013-2025, Mahmoud Fayed <msfclipper@yahoo.com>
+Usage : ring filename.ring [Options]
+===========================================================================
+-tokens   :  Print a list of tokens in the source code file
+-rules    :  Print grammar rules applied on the tokens
+-ic       :  Print the intermediate byte code (before execution)
+-icfinal  :  Print the final byte code (after execution)
+-cgi      :  Print http response header before error messages
+-norun    :  Don't run the program after compiling
+-ins      :  Print instruction operation code before execution
+-clock    :  Print clock before and after program execution
+-go       :  Generate object file
+-geo      :  Generate embedded object file (C source code)
+-w        :  Display Warnings
+===========================================================================

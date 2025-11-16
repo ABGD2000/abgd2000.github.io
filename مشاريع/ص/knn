@@ -1,0 +1,30 @@
+# مجموعة بيانات التدريب (أمثلة بسيطة جدًا)
+data = [
+    [1, 1, 0], # x, y, الفئة
+    [2, 2, 0],
+    [5, 5, 1],
+    [6, 6, 1]
+]
+
+# النقطة الجديدة التي نريد تصنيفها
+new_point = [3, 3]
+
+# دالة لحساب المسافة الإقليدية
+func euclidean_distance(point1, point2)
+    return sqrt((point1[1] - point2[1])^2 + (point1[2] - point2[2])^2)
+end
+
+# البحث عن أقرب جار
+min_distance = 1000000 # قيمة كبيرة مبدئية
+nearest_neighbor_class = -1
+
+for i = 1 to len(data)
+    distance = euclidean_distance(new_point, data[i])
+    if distance < min_distance
+        min_distance = distance
+        nearest_neighbor_class = data[i][3]
+    end
+end
+
+see "النقطة الجديدة: (" + new_point[1] + ", " + new_point[2] + ")" + nl
+see "أقرب جار: الفئة " + nearest_neighbor_class + nl

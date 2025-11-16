@@ -1,0 +1,584 @@
+class dring from Page
+	is_vendor_found = 0
+	cScriptfiles = ''
+	cStylsheetFiles= ''
+	cPage_title = ''
+	cHeader = ''
+	cPageicon = ''
+	csscode = ''
+	#html('Content-Type:text/html')
+	if sysget('REQUEST_METHOD') = "POST"
+		aPageVars[:page] = aPageVars[:hrefpg] 
+	ok
+	if trim(aPageVars[:page]) = ""  
+		aPageVars[:page] = 'index'
+	ok
+	func header(ch)
+		cHeader += ch+nl+copy(tab,2)
+	func settitle(ct)
+		cPage_title = ct
+	func seticon(ci)
+		cPageicon = ci
+	func css(c_Selector,c_Code)
+		csscode += c_Selector+' {'+substr(c_Code,';',';'+nl+copy(tab,3))+'}'+nl+copy(tab,3)
+	func bracestart
+	cu_dir = currentdir()
+	aDirs = dir(cu_dir)
+	for dir in aDirs
+	if lower(dir[1]) = 'vendor' and dir[2] = 1
+		this.is_vendor_found = 1
+	ok
+	next
+	if is_vendor_found
+	cScriptfiles = nl
+	cStylsheetFiles = nl
+	avendofiles = split(read('batch/ring/vendorssrc.ini'), nl)
+	for filepath in avendofiles
+		if lower(right(filepath,4))= '.css'
+		 cStylsheetFiles+=Tab+tab+'<link href="'+substr(MainUrl+filepath,'//vendor/','/vendor/')+'" rel="stylesheet">'+nl
+		else
+		 cScriptfiles += tab+Tab+'<script src="'+substr(MainUrl+filepath,'//vendor/','/vendor/')+'" ></script>'+nl
+		ok
+	next
+		//.... 
+		//dring{ cOutput+= read('batch/ring/vendorssrc.ini') }
+	ok
+	Func Print()
+	if cOutput != ''
+	 ctop = '<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link href="/bootstrap/bootstrap.css" rel="stylesheet">
+		<link href="/bootstrap/style.css" rel="stylesheet">
+		<script src="/bootstrap/jq.js"></script>
+'+cStylsheetFiles
+if not isnull(cPage_title) ctop+= tab+tab+'<Title>'+cPage_title+'</Title>'+nl ok
+if not isnull(cHeader) ctop+= tab+tab+cHeader+nl ok
+if not isnull(cPageicon) ctop+= tab+tab+'<link rel="icon" type="image/x-icon" href="'+Mainurl+cPageicon+'">'+nl ok
+if not isnull(csscode) ctop+= tab+tab+'<Style>'+nl+nl+copy(tab,3)+csscode+nl+copy(tab,2)+'</Style>' ok
+ctop+='
+	</head>
+	<body>
+'
+	cend = '
+		<script src="/bootstrap/bootstrap.js"></script>'+cScriptfiles+'
+	</body>
+</html>'
+	WebPrint(cCookies+"Content-type: text/html" +nl+nl+ctop+cStyleSheet+cOutput+cend)
+ok
+	#sysset('Content-Type','Text/HTML')
+
+Class Page from Application
+		
+		StartHtml()	
+
+		Func text x
+			if isstring(x)
+				cOutput += nl+GetTabs() + htmlspecialchars(x)
+			but isnumber(x)
+				cOutput += nl+GetTabs() + htmlspecialchars(string(x))
+			ok
+
+		Func html x
+			cOutput += x
+
+		Func h1 x
+			html( GetTabs()+"<h1>" + x + "</h1>" )
+
+		Func h2 x
+			html( GetTabs()+"<h2>" + x + "</h2>" )
+
+		Func h3 x
+			html( GetTabs()+"<h3>" + x + "</h3>" )
+
+		Func h4 x
+			html( GetTabs()+"<h4>" + x + "</h4>" )
+
+		Func h5 x
+			html( GetTabs()+"<h5>" + x + "</h5>" )
+
+		Func h6 x
+			html( GetTabs()+"<h6>" + x + "</h6>" )
+
+		Func p aPara
+			html( nl+GetTabs()+'<p ' )
+			addattributes(aPara)
+			html( '>' )
+			if aPara[:text] != NULL
+				html( nl+GetTabs()+aPara[:text] )
+			ok
+			html( nl+GetTabs()+'</p>' )
+
+		Func newline 
+			cOutput += nl+GetTabs()+"<br />"
+		Func braceend 
+			print() 
+//the application class		
+Class Application
+		cStart = ""
+		cCookies = ""
+		cOutput = ""
+		cCSS = ""
+		Title = "Test"
+		cBody = ""
+		cStyleSheet = ''
+		lBootstrap = False
+
+		lPrint = true
+		cPrintString = ""
+
+		lContentType = false
+	func setStyleSheet(cStyle)
+	cStyleSheet += cStyle
+
+		func WebPrint cStr
+			if lPrint
+				see cStr
+			else 
+				cPrintString += cStr
+			ok
+
+		func NoOutput
+			lPrint = False
+			cPrintString = ""
+			lContentType = False 
+
+		func Output 			
+			return cPrintString
+
+		Func DecodeString cStr
+			cStr = cStr + "&" 
+			aOutput = [] 	
+			aRes = [] 
+			cValue = ""
+			for x = 1 to len(cStr)
+				t = cStr[x]
+				if t = "="  
+					aRes + cValue
+					cValue = ""
+				but t = "&" 
+					aRes + cValue
+					cValue = "" 
+					aOutput + aRes
+					aRes = []
+				but t = "+"
+					cValue = cValue + " "
+				but t = "%"
+					cValue = cValue + hex2str(cStr[x+1]+cStr[x+2])
+					x = x+2
+				but t = '"'
+				else 
+					cValue = cValue + t 
+				ok
+			next
+			return aOutput
+
+		Func Decode cInput
+			if left(sysget("CONTENT_TYPE"),20) != "multipart/form-data;"
+				return decodestring(cInput)
+			ok
+
+			# Decode (File Uploading)
+
+			nPos = substr(cInput,"Content-Disposition") 
+			cMark = left(cInput,nPos-3)
+
+			VarsList = []
+
+			while true
+
+				NewVar = [] # List contains the new variable
+				nPos = substr(cInput,'"')  # start of the name
+
+				cInput = substr(cInput,nPos+1) #remove before start
+				nPos = substr(cInput,'"')  # end of the name
+
+				NewVar + left(cInput,nPos-1)	# add Name to List
+				cInput = substr(cInput,nPos+1) # after name	
+
+				if left(cInput,1) = ";"
+
+					nPos = substr(cInput,'"')  # start of the file name
+					cInput = substr(cInput,nPos+1) # after file name
+					nPos = substr(cInput,'"')  # end of the file name
+					cFile = left(cInput,nPos-1)	# File Name to be added to the List
+					
+					for x = 1 to 3
+						nPos = substr(cInput,nl)
+						cInput = substr(cInput,nPos+1) # after new line
+					next
+
+					nPos = substr(cInput,cMark) 
+					NewVar + left(cInput,nPos-2)    # Get File content
+					NewVar + cFile			# Add file Name
+					cInput = substr(cInput,nPos)
+					
+				else
+
+					for x = 1 to 2
+						nPos = substr(cInput,nl)
+						cInput = substr(cInput,nPos+1) # after new line
+					next
+
+					nPos = substr(cInput,nl)
+					NewVar + left(cInput,nPos-1)
+
+					cInput = substr(cInput,nPos+1) # after value
+
+				ok
+
+				VarsList + NewVar
+
+				nPos = substr(cInput,cMark) 
+
+				if substr(cInput,cMark+"--") = nPos
+					exit
+				ok
+			end
+
+			return VarsList
+		
+		Func GetFileName  aArray,cVar
+			for x in aArray
+				if len(x) >= 3
+					if x[1] = cVar
+						return WL_justfilename(x[3])
+					ok
+				ok
+			next
+			return "NULL"
+
+		Func setcookie name,value,expires,path,domain,secure
+			cCookies += "Set-Cookie: "+name+"="+value+"; expires="+expires+
+				    "; path="+path+"; domain="+domain+"; "+secure + "; HttpOnly"+ nl
+
+		Func cookie name,value
+			cCookies += "Set-Cookie: "+name+"="+value+";" + nl
+
+		Func getcookies 
+			cStr = sysget("HTTP_COOKIE")
+			if cStr = "NULL" 	return 	OK 
+			# var1=value; var2=value; var3=value
+			cStr += ";"
+			aOutput = [] 	 
+			nPos = substr(cStr,";")
+			While nPos > 0
+				nPos2 = substr(cStr,"=") 
+				if nPos2 = 0 exit ok
+				aRes = []
+				aRes + trim(left(cStr,nPos2-1))
+				aRes + substr(cStr,nPos2+1,nPos-nPos2-1)
+				aOutput + aRes 
+				cStr = substr(cStr,nPos+1)
+				nPos = substr(cStr,";")
+			end
+			return aOutput
+
+		Func URLEncode cStr
+			cOut = ""
+			for x in cStr
+				if isalnum(x)
+					cOut += x
+				but x = " "
+					cOut += "+"
+				else
+					cOut += "%"+str2hex(x)
+				ok
+			next
+			return cOut	
+		
+		Func ScriptLibs
+			if lBootstrap
+				cStr = nl+'<meta name="viewport" content="width=device-width, initial-scale=1">' + nl +
+  				       '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">'+nl+
+				       '<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.01.3/jquery.min.js"></script>'+nl+
+			 	       '<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>'+nl
+			else
+				cStr = nl+'<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.01.3/jquery.min.js"></script>'+nl
+			ok	
+			return TabMLString(cStr)
+
+		Func Print
+			WebPrint(cCookies+trimall( GetHTMLStart()+nl )+cOutput )
+
+
+		Func style cStyle
+			cCSS += cStyle 
+
+		Func starthtml 
+
+			cStart = "Content-type: text/html" + windowsnl() 
+
+		Func GetHTMLStart
+			if lContentType 
+				return cStart
+			else 
+				return cStart
+			ok
+
+		Private
+
+			nTabs = 1
+
+			Func TabPush
+				nTabs++
+
+			Func TabPOP
+				nTabs--
+
+			Func GetTabs
+				return copy(char(9),nTabs)
+
+			Func TabMLString cStr
+				aList = str2list(cStr)
+				for t in aList
+					t = GetTabs() + t
+				next
+				return list2str(aList)		
+// Databases
+// Mysql
+
+class dmysql
+	load 'mysqllib.ring'
+	mysql_connection = [
+		:host    = "localhost",
+		:port    = null   ,
+		:user 	  = "root" ,
+		:pass 	  = "" 	   ,
+		:db_name = ""
+	]
+	init = ysql_init()
+	mysql_connect( init,mysql_connection['host'] , mysql_connection["user"] , mysql_connection["pass"] , mysql_connection['db_name'])
+	
+	func delete(tblname,colname,deleteby)
+		mysql_query(init,'delete from '+tblname+' where '+colname+'="'+deleteby+'"')
+	func updatedbshow(tblname,colname,colval,cols,colsval)
+		cstr='update '+tblname+' set '+
+		for x=1 to len(cols)
+			cstr+=cols[x]+'="'+colsval[x]+'", '
+		next
+		cstr += ', where '+colname+'="'+colval+'"'
+		cstr = substr(cstr,', ,','')
+		return cstr
+	func updatedb(tblname,colname,colval,cols,colsval)
+		cstr='update '+tblname+' set '+
+		for x=1 to len(cols)
+			cstr+=cols[x]+'="'+colsval[x]+'", '
+		next
+		cstr += ', where '+colname+'="'+colval+'"'
+		cstr = substr(cstr,', ,','')
+		#? cstr
+		if not mQUERY(cstr)
+			return 'success'
+		else return 'danger '+nl + mysql_error(init)
+		ok
+	
+	func query(cstr)
+		return mysql_query(init,cstr) 
+	func result()
+		return mysql_result(init) 
+	func add2db(tblname,tblval)
+		cstr='insert into '+tblname+' values("'+tblval[1]
+		for x=2 to len(tblval)
+			cstr+= '","'+ tblval[x] + '"'
+		next
+		cstr += ')'
+		cstr = substr(cstr,'""','"')
+		#? cstr
+		if not mQUERY(cstr)
+			return 'success'
+		else return 'danger '+nl + mysql_error(init)
+		ok
+	func isconnected()
+		if mysql_error(init) = null
+			return html('connected successfully')
+		else 
+			return mysql_error(init)
+		ok
+	
+	
+
+// Postgre Sql
+class Dpg
+load "postgresqllib.ring"
+pg_connection = `You Need To Set this Vars
+pg_username = "postgres", 
+pg_password = " ",
+pg_database = " ", 
+pg_port     = "5432",
+pg_conn     = NULL 
+`
+pg_username = "postgres"
+pg_password = " "
+pg_database = " "
+pg_port     = "5432"
+pg_conn     = NULL 
+def pgcon()
+	conninfo  = " user="     + pg_username
+	conninfo += " password=" + pg_password
+	conninfo += " dbname="   + pg_database
+	conninfo += " port="     + pg_port
+	pg_conn = PQconnectdb(conninfo)
+
+def pgclose()
+	PQfinish(pg_conn)
+
+def pgquery(sql_statement)
+	pgcon()
+	res = PQexec( pg_conn , sql_statement )
+	err = ""
+	if PQresultStatus(res) != PGRES_TUPLES_OK
+		err = PQerrorMessage(pg_conn)
+	ok
+	PQclear(res)
+	pgclose()
+	if err=""
+		return True
+	else
+		return False
+		? PQerrorMessage(pg_conn)
+	ok
+def pgresult(select_statement)
+	pgcon()
+	res = PQexec( pg_conn , select_statement )
+	err = ""
+	table   = []
+	if PQresultStatus(res) != PGRES_TUPLES_OK
+		err = PQerrorMessage(pg_conn)
+	else
+		nRows   = PQntuples(res)
+		nFields = PQnfields(res)
+		for i=1 to nRows
+			row = []
+			for j=1 to nFields
+				row[PQfname(res, j-1)] = PQgetvalue(res, i-1, j-1)
+			next
+			add( table , row )
+		next
+	ok
+	PQclear(res)
+	pgclose()
+	if err=""
+		return table
+	else
+		return err
+	ok
+def pgauto_num( table , column )
+	tbl = pgresult( "select max(" + column + ")+1 as num from " + table )
+	if type(tbl)=type([]) and len(tbl)>0
+		if tbl[1][:num] != NULL
+			return tbl[1][:num]
+		else
+			return "1"
+		ok
+	else
+		return "0"
+	ok
+
+//? PGdelete('products','pro_id',4)
+func PGdelete(tblname,colname,deleteby)
+	return PGquery('delete from '+tblname+' where '+colname+"='"+deleteby+"'")
+//? pgupdatedb('products','pro_id',22,['pro_id','pro_name','pro_description'],[1,'trest edit','test edit descrp'])
+func pgupdatedb(tblname,colname,colval,cols,colsval)
+	cstr='update '+tblname+' set '+
+	for x=1 to len(cols)
+		cstr+=cols[x]+'="'+colsval[x]+'", '
+	next
+	cstr += ', where '+colname+'="'+colval+'"'
+	cstr = substr(substr(cstr,', ,',''),'"',"'")
+	#? cstr
+	if pgQUERY(cstr)
+		return true
+	else return false
+	ok
+
+//? pgadd2db('products',[1,'test1','test1 description'])
+func pgadd2db(tblname,tblval)
+	cstr='insert into '+tblname+' values("'+tblval[1]
+	for x=2 to len(tblval)
+		cstr+= '","'+ tblval[x] + '"'
+	next
+	cstr += ')'
+	cstr = substr(substr(cstr,'""','"'),'"',"'")
+	#? cstr
+	if not pgquery(cstr)
+		return true
+	else return false
+	ok
+// Sqlite
+class Dsqlite
+	load "sqlitelib.ring"
+	oSql DbName res
+	func init(Db_Name)
+		if isnull(Db_Name) return ok 
+		cudir = currentdir()
+		OSCreateOpenFolder('Databases')
+		writefile('.htaccess',"Options -Indexes"+nl)
+		chdir(cudir)
+		oSql = sqlite_init()
+		DbName = Db_Name
+		sqlite_open(oSql,'Databases/'+dbname)
+	func setDb(cdb)
+		if isnull(oSql) 
+			init(cdb)
+			return
+		ok
+		if isnull(cdb) return ok 
+		sqlite_close(osql)
+		DbName = cdb
+		sqlite_open(oSql,dbname)
+	func Query(cq)
+		if isnull(cq) or isnull(oSql) return ok 
+		return sqlite_execute(oSql,cq)
+	func result(cq)
+		return Query(cq)
+	func add2db(tblname,tblval)
+		cstr='insert into '+tblname+' values("'+tblval[1]
+		for x=2 to len(tblval)
+			cstr+= '","'+ tblval[x] + '"'
+		next
+		cstr += ')'
+		cstr = substr(substr(cstr,'""','"'),'"',"'")
+		if this.Query(cstr)
+			return true
+		else return false
+		ok
+		func delete(tblname,colname,deleteby)
+		return this.Query('delete from '+tblname+' where '+colname+"='"+deleteby+"'")
+	func DropTable(ctblname)
+		return this.Query('drop table "'+ctblname+`"`)
+	func update(tblname,colname,colval,cols,colsval)
+		cstr='update '+tblname+' set '+
+		for x=1 to len(cols)
+			cstr+=cols[x]+'="'+colsval[x]+'", '
+		next
+		cstr += ', where '+colname+'="'+colval+'"'
+		cstr = substr(substr(cstr,', ,',''),'"',"'")
+		if this.query(cstr)
+			return true
+		else return false
+		ok
+	func auto_num( table , column )
+		tbl = result( "select max(" + column + ")+1 as num from " + table )
+		if type(tbl)=type([]) and len(tbl)>0
+			if tbl[1][:num] != NULL
+				return tbl[1][:num]
+			else
+				return "1"
+			ok
+		else
+			return "0"
+		ok
+	func setres(cstr_Query)
+		res = Result(cstr_Query)
+	func getres()
+		return res
+	func setDbName(dbname)
+		return setDb(dbname)
+	func braceend()
+		if isnull(oSql) return ok 
+		sqlite_close(osql)

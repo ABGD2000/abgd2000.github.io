@@ -1,0 +1,37 @@
+تحميل "حساب.ض"
+
+شوف وزع_تطبيعي_مبدئي(10)
+
+دالة وزع_تطبيعي الحجم , الوسط , الإنحراف
+// data1.frame(sampl=rnorm(16))
+
+القيم = []
+من س=1 إلى الحجم
+ر1 = هب_رقم(1,1)
+ر2 = هب_رقم(1,1) 
+
+
+م0 = الجزر_التربيعي(-2 *لوج(ر1) )* جتا(2 * ط  * ر2)
+الرقم = الوسط + الإنحراف * م0
+
+شوف " " + ر1 +" " + ر2 + " " + م0 + " " + الرقم شوف سطر
+القيم + الرقم
+دور
+مرر القيم
+تمام
+
+دالة وزع_تضخمي 
+
+تمام
+
+دالة وزع_عينيات
+
+تمام
+
+دالة وزع_
+These functions provide information about the Poisson distribution with parameter lambda . dpois gives the density, ppois gives the distribution function qpois gives the quantile function and rpois generates random deviates.
+
+https://ar.wikipedia.org/wiki/%D8%AA%D9%88%D8%B2%D9%8A%D8%B9_%D8%A8%D9%88%D8%A7%D8%B3%D9%88%D9%86
+دالة وزع_تطبيعي_مبدئي الحجم
+مرر وزع_تطبيعي (الحجم , 0 , 1)
+تمام
