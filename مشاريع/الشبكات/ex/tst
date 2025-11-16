@@ -1,0 +1,3 @@
+load "internetlib.ring"
+
+write("011011.mp3",download("http://verse.mp3quran.net/data/Abdul_Basit_Mujawwad_128kbps/011011.mp3"))
