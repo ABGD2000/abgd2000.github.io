@@ -1,0 +1,136 @@
+# LogicX – Mini Inference Engine in Ring
+# --------------------------------------
+
+factMap = []       # قاعدة الحقائق
+ruleMap = []       # قاعدة القواعد
+
+# -----------------------------
+# دالة لإضافة حقيقة
+func addFact(predicate, a, b)
+    found = 0
+    for item in factMap
+        if item[:pred] = predicate
+            found = 1
+            predMap = item[:map]
+            exit
+        ok
+    next
+    if found = 0
+        predMap = []
+        factMap + [ [ :pred = predicate, :map = predMap ] ]
+    ok
+    if not predMap[a]
+        predMap[a] = []
+    ok
+    predMap[a] + [ b ]
+return
+
+# -----------------------------
+# دالة لإضافة قاعدة
+func addRule(predicate, params, body, callback)
+    ruleMap + [ [ :pred = predicate, :params = params, :body = body, :callback = callback ] ]
+return
+
+# -----------------------------
+# دالة تنفيذ قاعدة
+func executeRule(rule, env, callback)
+    params = rule[:params]
+    body   = rule[:body]
+    cb     = rule[:callback]
+
+    func evalBody(index, env2)
+        if index > len(body)
+            cb(env2)
+            return
+        ok
+
+        step = body[index]
+        kind = step[1]
+
+        if kind = "fact"
+            pred = step[2]
+            aVar = step[3]
+            bVar = step[4]
+            for item in factMap
+                if item[:pred] = pred
+                    subMap = item[:map]
+                    for p in keys(subMap)
+                        for c in subMap[p]
+                            newEnv = env2
+                            newEnv[aVar] = p
+                            newEnv[bVar] = c
+                            evalBody(index + 1, newEnv)
+                        next
+                    next
+                ok
+            next
+        elseif kind = "notEqual"
+            xVar = step[2]
+            yVar = step[3]
+            if env2[xVar] <> env2[yVar]
+                evalBody(index + 1, env2)
+            ok
+        elseif kind = "rule"
+            pred = step[2]
+            aVar = step[3]
+            bVar = step[4]
+            query(pred, [ aVar = env2[aVar] ], func(innerEnv)
+                merged = env2
+                for k in keys(innerEnv)
+                    merged[k] = innerEnv[k]
+                next
+                evalBody(index + 1, merged)
+            end)
+        ok
+    end
+
+    evalBody(1, env)
+return
+
+# -----------------------------
+# دالة الاستعلام
+func query(predicate, knownValues, callback)
+    # أولاً: حقائق مباشرة
+    for item in factMap
+        if item[:pred] = predicate
+            predMap = item[:map]
+            if knownValues["A"]
+                a = knownValues["A"]
+                if predMap[a]
+                    for b in predMap[a]
+                        callback([ "A" = a, "B" = b ])
+                    next
+                ok
+            ok
+        ok
+    next
+
+    # ثانياً: القواعد
+    for rule in ruleMap
+        if rule[:pred] = predicate
+            executeRule(rule, knownValues, callback)
+        ok
+    next
+return
+
+# -----------------------------
+# أمثلة على الاستخدام
+# إضافة حقائق
+addFact("parent", "ali", "sara")
+addFact("parent", "ali", "omar")
+addFact("parent", "fatima", "sara")
+addFact("parent", "fatima", "omar")
+
+# قاعدة الأخوة
+addRule("sibling", ["X", "Y"], [
+    ["fact","parent","P","X"],
+    ["fact","parent","P","Y"],
+    ["notEqual","X","Y"]
+], func(res)
+    see "Sibling found: " + res["Y"] + nl
+end)
+
+# استعلام
+query("sibling", ["X" = "sara"], func(r)
+    see "Result => Y = " + r["B"] + nl
+end)
