@@ -1,0 +1,152 @@
+تحميل "libcurl.ring"
+تحميل "jsonlib.ring"
+
+وحدة رسالة 
+الرأس = ""
+الجسم=[]
+بيان=""
+
+دالة هل_قائمة متغير
+مرر islist(متغير)
+تمام
+دالة طول متغير
+مرر len(متغير)
+تمام
+دالة أجعل_موقع المدخلات
+النتيجة=""
+من معلومة في المدخلات
+لو هل_قائمة(معلومة) &&طول(معلومة) > 1
+النتيجة += معلومة[1]+"=" +  معلومة[2] + "&"
+تم
+دور
+مرر النتيجة
+تمام
+دالة محتوى
+
+النتيجة=""+أجعل_موقع(بيان)
+
+مرر النتيجة
+تمام
+دالة المنشور
+النتيجة=أجعل_موقع( الجسم)
+
+مرر النتيجة
+تمام
+دالة فهرس 
+مرر [
+:الرأس= الرأس ,
+:المنشور =المنشور() ,
+:البيانات=محتوى()
+]
+تمام 
+
+تمام
+
+وحدة طلب 
+الرد 
+دالة العنوان عنوان
+الناتج = ""
+من س في عنوان
+لو isalnum(س)
+الناتج += س
+إذا س= " "
+الناتج += "+"
+لا
+الناتج += "%"+str2hex(x)
+تم
+دور
+مرر الناتج
+
+تمام
+دالة أنشر عنوان , جسم ,بيانات , رأس
+باحث = curl_easy_init()
+
+عملية_الإيجاد=1  curl_easy_setopt(باحث, CURLOPT_USERAGENT, "curl/7.54.1" )
+م=أعمل رسالة م.الرأس=رأس  م.بيان=بيانات م.الجسم=جسم
+فهرس_رسالة=م.فهرس()
+المنشور = فهرس_رسالة["المنشور"]
+عملية_تأسيس=1   curl_easy_setopt(باحث, CURLOPT_POST, 1)
+curl_easy_setopt(باحث, CURLOPT_HEADER, 0)
+عملية_تأسيس=2   curl_easy_setopt(باحث, CURLOPT_FOLLOWLOCATION, 1) 
+
+عملية_تأسيس=3  curl_easy_setopt(باحث, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.3) Gecko/20070309 Firefox/2.0.0.3")
+
+عملية_تأسيس=3  curl_easy_setopt(باحث, CURLOPT_SSL_VERIFYPEER, FALSE)
+curl_easy_setopt(باحث, CURLOPT_SSL_VERIFYHOST, 2)
+
+قائمة_التعريفات = curl_slist_append(فارغ , 'Accept-Charset: utf-8')
+لو (رأس != "")
+عملية_تأسيس=0 curl_slist_append(قائمة_التعريفات ,رأس)
+تمام
+عملية_تأسيس=4 curl_slist_append(قائمة_التعريفات ,'Accept-Language: en-us,en;q=0.7,bn-bd;q=0.3')
+عملية_تأسيس=5  curl_slist_append(قائمة_التعريفات ,'Accept: text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5')
+
+عملية_معلومات=1   curl_easy_setopt(باحث ,  CURLOPT_HTTPHEADER , قائمة_التعريفات )
+
+عملية_معلومات=2 curl_easy_setopt(باحث,  CURLOPT_URL , عنوان+فهرس_رسالة["البيانات"])
+
+عملية_معلومات=3  curl_easy_setopt(باحث, CURLOPT_POSTFIELDS , المنشور)
+
+الرد =curl_easy_perform_silent(باحث)
+
+التنظيف =1  curl_easy_cleanup(باحث) 
+مرر الرد
+تمام
+
+دالة أحضر (عنوان , بيانات , رأس)
+باحث = curl_easy_init()
+
+عملية_الإيجاد=1  curl_easy_setopt(باحث, CURLOPT_USERAGENT, "curl/7.54.1" )
+م=أعمل رسالة م.الرأس=رأس  م.بيان=بيانات م.الجسم=""
+فهرس_رسالة=م.فهرس()
+المنشور = فهرس_رسالة["المنشور"]
+
+curl_easy_setopt(باحث, CURLOPT_HEADER, 0)
+عملية_تأسيس=2   curl_easy_setopt(باحث, CURLOPT_FOLLOWLOCATION, 1) 
+
+عملية_تأسيس=3  curl_easy_setopt(باحث, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.3) Gecko/20070309 Firefox/2.0.0.3")
+
+عملية_تأسيس=3  curl_easy_setopt(باحث, CURLOPT_SSL_VERIFYPEER, FALSE)
+curl_easy_setopt(باحث, CURLOPT_SSL_VERIFYHOST, 2)
+
+قائمة_التعريفات = curl_slist_append(فارغ , 'Accept-Charset: utf-8')
+لو (رأس != "")
+عملية_تأسيس=0 curl_slist_append(قائمة_التعريفات ,رأس)
+تمام
+عملية_تأسيس=4 curl_slist_append(قائمة_التعريفات ,'Accept-Language: en-us,en;q=0.7,bn-bd;q=0.3')
+عملية_تأسيس=5  curl_slist_append(قائمة_التعريفات ,'Accept: text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5')
+
+عملية_معلومات=1   curl_easy_setopt(باحث ,  CURLOPT_HTTPHEADER , قائمة_التعريفات )
+
+
+عملية_معلومات=2 curl_easy_setopt(باحث,  CURLOPT_URL , عنوان+فهرس_رسالة["البيانات"])
+
+
+
+الرد =curl_easy_perform_silent(باحث)
+
+التنظيف =1  curl_easy_cleanup(باحث) 
+مرر الرد
+تمام
+
+
+دالة هات_طلب(عنوان)
+	باحث = curl_easy_init()
+	عملية_الإيجاد=1 curl_easy_setopt(باحث, CURLOPT_FOLLOWLOCATION, 1)
+	عملية_معلومات=1 curl_easy_setopt(باحث, CURLOPT_URL, عنوان+البيانات)
+
+	الرد = curl_easy_perform_silent(باحث)
+	التنظيف=1 curl_easy_cleanup(curl)
+	مرر الرد
+تمام
+ دالة الفهرس
+ مرر   Json2List(الرد)
+ تمام
+دالة نشر_طلب(عنوان)
+
+
+
+
+تمام
+
+تمام

@@ -1,0 +1,56 @@
+تحميل "الطالب.ض"
+clientID="37c84afe-456d-438c-abc1-10ac2476e150"
+Password1="ef1c21ab-2d8f-4e59-a7d8-0d7466e6a823"
+REG_TAX_ID="376564970"
+TaxActivityCode="1312"
+
+base_url = "https://id.eta.gov.eg"
+api_url="https://api.invoicing.eta.gov.eg"
+urlPrefix = '/api/v1.0'
+Login_url = "/connect/token"
+documentpackages="/documentpackages/requests?pageNo={pageNo}&pageSize={pageSize}"
+documenttypes="/documenttypes"
+التحميل()
+
+دالة بحث_الباقة (date,pageSize,direction)
+  مرر      api_url+urlPrefix+"/documents/search?submissionDateFrom="+date+"&submissionDateTo="+date+"T23:59:59&continuationToken=&pageSize="+pageSize+"&issueDateFrom=&issueDateTo=&direction="+direction+"&status=&documentType=&receiverType=&receiverId=&issuerType=&issuerId="
+  تمام
+  
+
+دالة التحميل 
+
+بيع ="Sent"
+شراء = "Received"
+
+التاريح="2024-02-14"  
+العنوان = base_url+Login_url
+
+شوف العنوان + سطر
+البيانات = [
+:grant_type='client_credentials',
+:client_id=clientID,
+:client_secret=Password1, 'scope' = 'InvoicingAPI' ]
+       
+
+طلب = أعمل طلب{}
+السماح = طلب.أنشر(العنوان ,البيانات, "" , "" )
+
+شوف السماح
+شوف "---------------"  شوف سطر
+المحتوى= طلب.الفهرس()
+سماح= المحتوى["access_token"]
+
+شوف سماح
+شوف سطر 
+
+رأس = "Authorization" + ":"  + "Bearer "+سماح
+
+بحث_الفواتير = بحث_الباقة(التاريح , 1000 , شراء) 
+الفواتير = طلب.أحضر(بحث_الفواتير , "" , رأس)
+شوف الفواتير
+شوف سطر
+
+
+  تمام
+  
+  

@@ -1,0 +1,143 @@
+load "httplib.ring"
+? "Try localhost:8080/hello"
+oServer = new Server {
+route(:Get,"/hello",func {
+oServer.setContent("Hello, World!", "text/plain")
+})
+listen("0.0.0.0", 8080)
+}
+Example(4):
+load "httplib.ring"
+? "Try localhost:8080/hi - See output in console at Server-Side"
+? "Try localhost:8080/hello - See output in web browser at Client-Side"
+(continues on next page)
+72.6. Using HTTP GET
+983Ring Documentation, Release 1.22.0
+(continued from previous page)
+oServer = new Server {
+route(:Get,"/hi",'? "Wow, I love Ring programming!"')
+route(:Get,"/hello",'oServer.setContent("Hello, World!", "text/plain")')
+listen("0.0.0.0", 8080)
+}
+Example(5):
+load "httplib.ring"
+new Client("localhost:8080") {
+? download("/one")
+? download("/two")
+}
+Tip: Using the Download() method in the InternetLib is faster
+72.7 Using WebLib
+Example(1):
+load "httplib.ring"
+load "weblib.ring"
+import System.Web
+? "Start the server..."
+oServer = new Server
+? "Try localhost:8080/report"
+oServer.route(:Get,"/report",:report)
+? "Listen to port 8080"
+oServer.listen("0.0.0.0", 8080)
+func report
+oPage = New HTMLPage
+{
+nRowsCount = 10
+title = "Report"
+h1 { text("Customers Report") }
+Table
+{
+style = stylewidth("100%") + stylegradient(4)
+TR
+{
+TD { WIDTH="10%" text("Customers Count : " )
+}
+(continues on next page)
+72.7. Using WebLib
+984Ring Documentation, Release 1.22.0
+(continued from previous page)
+TD { text (nRowsCount) }
+}
+}
+Table
+{
+style = stylewidth("100%") + stylegradient(26)
+TR
+{
+style = stylewidth("100%") + stylegradient(24)
+TD { text("Name " ) }
+TD { text("Age" ) }
+TD { text("Country" ) }
+TD { text("Job" ) }
+TD { text("Company" ) }
+}
+for x = 1 to nRowsCount
+TR
+{
+TD { text("Test" ) }
+TD { text("30" ) }
+TD { text("Egypt" ) }
+TD { text("Sales" ) }
+TD { text("Future" ) }
+}
+next
+}
+}
+oServer.setHTMLPage(oPage)
+72.8 Using HTTP Post
+Example(1):
+load "httplib.ring"
+load "weblib.ring"
+import System.Web
+? "Start the server..."
+oServer = new Server
+? "Try localhost:8080/form"
+oServer.route(:Get,"/form",:form)
+oServer.route(:Post,"/formresponse",:formresponse)
+? "Listen to port 8080"
+oServer.listen("0.0.0.0", 8080)
+func form
+(continues on next page)
+72.8. Using HTTP Post
+985Ring Documentation, Release 1.22.0
+(continued from previous page)
+oPage = New HTMLPageFunctions
+{
+boxstart()
+text( "Post Test")
+newline()
+boxend()
+divstart([:style=StyleFloatLeft()+StyleWidth("100px") ])
+newline()
+text( "Number1 : " )
+newline() newline()
+text( "Number2 : " )
+newline() newline()
+divend()
+formpost("formresponse")
+divstart([ :style = styleFloatLeft()+StyleWidth("200px") ])
+newline()
+textbox([ :name = "Number1" ]) newline() newline()
+textbox([ :name = "Number2" ]) newline() newline()
+submit([ :value = "Send" ] )
+divend()
+formend()
+}
+oServer.setHTMLPage(oPage)
+func formresponse
+oPage = New HTMLPageFunctions
+{
+boxstart()
+text( "Post Result" )
+newline()
+boxend()
+divstart([ :style = styleFloatLeft()+styleWidth("200px") ])
+newline()
+text( "Number1 : " + oServer["Number1"] )
+newline() newline()
+text( "Number2 : " + oServer["Number2"] )
+newline() newline()
+text( "Sum : " + (0 + oServer["Number1"] +
+oServer["Number2"] ) )
+newline()
+divend()
+}
+oServer.setHTMLPage(oPage)
