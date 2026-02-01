@@ -102,7 +102,8 @@
 
 <script>
     // المحتوى الكامل لقواعد اللغة كما طلبته
-    const fileContent = `changeringkeyword changeringkeyword تغير
+    const fileContent = `
+    changeringkeyword changeringkeyword تغير
 RingVM_TranslateCFunction("ringvm_translatecfunction","ترجمة")
 تغير load تحميل
 تغير import نداء
@@ -174,12 +175,15 @@ RingVM_TranslateCFunction("ringvm_translatecfunction","ترجمة")
 تغير private خاص
 
 ترجمة("len","طول")
+ترجمة("substr","يحتوي")
 ترجمة("currentdir","المسار")
 ترجمة("ring_see","طباعة")
 ترجمة("ringvm_passerror","تخطي")
 ترجمة("system","النظام")
 ترجمة("version","النسخة")
 ترجمة("shutdown","أطقئ")
+ترجمة("input","الإدخال")
+ترجمة("date","التاريخ")
 /////////////////////////////
 ترجمة("add","ضف")
 ترجمة("substr","يحتوي")
@@ -187,6 +191,8 @@ RingVM_TranslateCFunction("ringvm_translatecfunction","ترجمة")
 ترجمة("floor","السابق")
 ترجمة("ceil","القادم")
 ترجمة("number","رقمي")
+ترجمة("number","عدد")
+ترجمة("decimals","الأعداد")
 ترجمة("fabs","نسبي_موجب")
 ترجمة("sqrt","جذر")
 ترجمة("sin","جا")
@@ -220,7 +226,6 @@ RingVM_TranslateCFunction("ringvm_translatecfunction","ترجمة")
 الأن["الساعة"] =   رقمي(صف_الزمن[7])
 الأن["الدقيقية"] =  رقمي(صف_الزمن[11])
 الأن["الثانية"] =   رقمي(صف_الزمن[13])
-
 
 اختبار_الاستخدام=0`;
 
