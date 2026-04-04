@@ -103,7 +103,8 @@
 <script>
     // المحتوى الكامل لقواعد اللغة كما طلبته
     const fileContent = `
-    changeringkeyword changeringkeyword تغير
+
+changeringkeyword changeringkeyword تغير
 RingVM_TranslateCFunction("ringvm_translatecfunction","ترجمة")
 تغير load تحميل
 تغير import نداء
@@ -206,7 +207,16 @@ RingVM_TranslateCFunction("ringvm_translatecfunction","ترجمة")
 /////////////////////////////////////////
 ترجمة("timelist","قائمة_الوقت")
 ///////////////////////////////////////////
+ترجمة("type","تعريف")
+ترجمة("ascii","ترميز")
+ترجمة("eval","تشغيل")
 
+ترجمة("copy","كرر")
+ترجمة("copy","نسخ")
+ترجمة("right","يمين")
+ترجمة("left","يسار")
+ترجمة("lines","اسطر")
+ترجمة("list","قائمة")
 
 
 
@@ -227,7 +237,7 @@ RingVM_TranslateCFunction("ringvm_translatecfunction","ترجمة")
 الأن["الدقيقية"] =  رقمي(صف_الزمن[11])
 الأن["الثانية"] =   رقمي(صف_الزمن[13])
 
-اختبار_الاستخدام=0`;
+اختبار_الاستخدام=0 `;
 
     const filename = 'ringsyntax.ring';
     const statusMessageElement = document.getElementById('statusMessage');
