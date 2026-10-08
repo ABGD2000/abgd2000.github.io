@@ -1,0 +1,1979 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>ملفات تزامن.ض</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            min-height: 100vh;
+
+            background-color: #f4f4f9;
+
+            margin: 0;
+
+            direction: rtl;
+        }
+
+
+        /* =========================================
+           الحاوية الرئيسية
+           ========================================= */
+
+        .container {
+
+            background-color: #fff;
+
+            padding: 30px;
+
+            border-radius: 10px;
+
+            box-shadow:
+                0 4px 10px rgba(0, 0, 0, .1);
+
+            max-width: 1100px;
+
+            width: 94%;
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 20px;
+        }
+
+
+        /* =========================================
+           العنوان
+           ========================================= */
+
+        h1 {
+
+            color: #333;
+
+            text-align: center;
+
+            margin: 0;
+        }
+
+
+        /* =========================================
+           اسم الملف
+           ========================================= */
+
+        .filename {
+
+            font-weight: bold;
+
+            color: #28a745;
+
+            text-align: center;
+
+            display: block;
+        }
+
+
+        /* =========================================
+           أزرار التحكم
+           ========================================= */
+
+        .buttons-container {
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            gap: 12px;
+
+            flex-wrap: wrap;
+        }
+
+
+        button,
+        .add-file-button {
+
+            background-color: #007bff;
+
+            color: white;
+
+            padding: 10px 15px;
+
+            border: none;
+
+            border-radius: 5px;
+
+            cursor: pointer;
+
+            font-size: 16px;
+
+            transition:
+                background-color .3s,
+                transform .1s;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 8px;
+        }
+
+
+        button:hover,
+        .add-file-button:hover {
+
+            background-color: #0056b3;
+        }
+
+
+        button:active,
+        .add-file-button:active {
+
+            transform: scale(.97);
+        }
+
+
+        .add-file-button {
+
+            background-color: #28a745;
+        }
+
+
+        .add-file-button:hover {
+
+            background-color: #1e7e34;
+        }
+
+
+        .clear-button {
+
+            background-color: #dc3545;
+        }
+
+
+        .clear-button:hover {
+
+            background-color: #b02a37;
+        }
+
+
+        button i,
+        .add-file-button i {
+
+            font-size: 18px;
+        }
+
+
+        input[type="file"] {
+
+            display: none;
+        }
+
+
+        /* =========================================
+           معلومات الملفات
+           ========================================= */
+
+        .files-info {
+
+            text-align: center;
+
+            color: #666;
+
+            font-size: 13px;
+        }
+
+
+        /* =========================================
+           قائمة الملفات
+           ========================================= */
+
+        .files-list {
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 10px;
+
+            justify-content: center;
+
+            background: #f1f3f5;
+
+            padding: 15px;
+
+            border-radius: 8px;
+
+            border: 1px solid #ddd;
+
+            min-height: 65px;
+        }
+
+
+        .file-item {
+
+            background: white;
+
+            border: 1px solid #ced4da;
+
+            border-radius: 6px;
+
+            padding: 10px 14px;
+
+            cursor: pointer;
+
+            transition: all .2s;
+
+            color: #333;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            user-select: none;
+        }
+
+
+        .file-item:hover {
+
+            background: #e9ecef;
+
+            border-color: #007bff;
+        }
+
+
+        .file-item.active {
+
+            background: #007bff;
+
+            color: white;
+
+            border-color: #007bff;
+        }
+
+
+        /*
+         * خط أخضر للملفات الافتراضية
+         */
+
+        .file-item.default-file {
+
+            border-right: 4px solid #28a745;
+        }
+
+
+        .file-item.active.default-file {
+
+            border-right-color: #fff;
+        }
+
+
+        .empty-message {
+
+            color: #777;
+
+            font-size: 14px;
+
+            padding: 10px;
+        }
+
+
+        /* =========================================
+           منطقة عرض الملف
+           ========================================= */
+
+        .content-area {
+  background-color: #e9ecef;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  padding: 15px;
+  text-align: right;
+  font-size: 14px;
+  white-space: pre-wrap;
+  max-height: 400px;
+  overflow-y: auto;
+  line-height: 1.6;
+  color: #495057;;
+        }
+
+
+        /* =========================================
+           Markdown
+           ========================================= */
+
+        .markdown-preview {
+
+            direction: rtl;
+
+            text-align: right;
+
+            font-family: Arial, sans-serif;
+
+            line-height: 1.9;
+
+            white-space: normal;
+
+            color: #212529;
+
+            background: #fff;
+        }
+
+
+        .markdown-preview h1 {
+
+            color: #212529;
+
+            text-align: right;
+
+            font-size: 2em;
+
+            border-bottom:
+                2px solid #ddd;
+
+            padding-bottom: 10px;
+        }
+
+
+        .markdown-preview h2 {
+
+            color: #343a40;
+
+            border-bottom:
+                1px solid #ddd;
+
+            padding-bottom: 6px;
+
+            margin-top: 28px;
+        }
+
+
+        .markdown-preview h3 {
+
+            color: #495057;
+
+            margin-top: 24px;
+        }
+
+
+        .markdown-preview h4 {
+
+            color: #495057;
+        }
+
+
+        .markdown-preview p {
+
+            margin: 12px 0;
+        }
+
+
+        .markdown-preview ul,
+        .markdown-preview ol {
+
+            padding-right: 25px;
+
+            padding-left: 0;
+        }
+
+
+        .markdown-preview li {
+
+            margin: 5px 0;
+        }
+
+
+        .markdown-preview blockquote {
+
+            border-right:
+                4px solid #007bff;
+
+            border-left: none;
+
+            margin: 15px 0;
+
+            padding:
+                8px 15px;
+
+            background: #f1f3f5;
+
+            color: #555;
+        }
+
+
+        .markdown-preview code {
+
+            direction: ltr;
+
+            unicode-bidi: plaintext;
+
+            background: #e9ecef;
+
+            padding:
+                3px 6px;
+
+            border-radius: 4px;
+
+            font-family:
+                Consolas,
+                Monaco,
+                monospace;
+
+            color: #c7254e;
+        }
+
+
+        .markdown-preview pre {
+
+            direction: ltr;
+
+            text-align: left;
+
+            background: #282c34;
+
+            color: #f8f8f2;
+
+            padding: 16px;
+
+            border-radius: 8px;
+
+            overflow-x: auto;
+
+            line-height: 1.5;
+        }
+
+
+        .markdown-preview pre code {
+
+            background: transparent;
+
+            padding: 0;
+
+            color: inherit;
+
+            direction: ltr;
+
+            unicode-bidi: normal;
+        }
+
+
+        .markdown-preview table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            margin:
+                20px 0;
+
+            background: white;
+        }
+
+
+        .markdown-preview th,
+        .markdown-preview td {
+
+            border:
+                1px solid #ced4da;
+
+            padding: 9px;
+
+            text-align: right;
+        }
+
+
+        .markdown-preview th {
+
+            background: #007bff;
+
+            color: white;
+        }
+
+
+        .markdown-preview tr:nth-child(even) {
+
+            background: #f8f9fa;
+        }
+
+
+        .markdown-preview a {
+
+            color: #007bff;
+
+            text-decoration: none;
+        }
+
+
+        .markdown-preview a:hover {
+
+            text-decoration: underline;
+        }
+
+
+        .markdown-preview img {
+
+            max-width: 100%;
+
+            height: auto;
+        }
+
+
+        .markdown-preview hr {
+
+            border: 0;
+
+            border-top:
+                1px solid #ddd;
+
+            margin:
+                25px 0;
+        }
+
+
+        /* =========================================
+           رسالة الحالة
+           ========================================= */
+
+        .status-message {
+
+            text-align: center;
+
+            font-size: 14px;
+
+            color: #28a745;
+
+            display: none;
+
+            padding: 5px;
+        }
+
+
+        /* =========================================
+           شاشة صغيرة
+           ========================================= */
+
+        @media (max-width: 600px) {
+
+            .container {
+
+                width: 96%;
+
+                padding: 15px;
+            }
+
+
+            .content-area {
+
+                min-height: 250px;
+
+                max-height: 500px;
+            }
+
+
+            button,
+            .add-file-button {
+
+                font-size: 14px;
+
+                padding: 9px 12px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+    <!-- =========================================
+         العنوان
+         ========================================= -->
+
+    <h1>
+
+        <i class="fas fa-folder-open"></i>
+
+        ملفات تزامن.ض
+
+    </h1>
+
+
+    <!-- =========================================
+         أزرار الملفات
+         ========================================= -->
+
+    <div class="buttons-container">
+
+
+        <label
+            for="fileInput"
+            class="add-file-button"
+        >
+
+            <i class="fas fa-plus"></i>
+
+            إضافة ملفات
+
+        </label>
+
+
+        <input
+            type="file"
+            id="fileInput"
+            multiple
+            accept="
+                .ring,
+                .txt,
+                .md,
+                .markdown,
+                .html,
+                .css,
+                .js,
+                .json,
+                .xml
+                ,.ملف
+                ,.شرح
+                ,.ض
+                ,.فكر
+                ,.ضوء
+                ,.ضي
+            "
+        >
+
+
+        <button
+            class="clear-button"
+            onclick="clearAddedFiles()"
+        >
+
+            <i class="fas fa-trash"></i>
+
+            حذف الملفات المضافة
+
+        </button>
+
+
+    </div>
+
+
+    <!-- =========================================
+         معلومات الملفات
+         ========================================= -->
+
+    <div
+        id="filesInfo"
+        class="files-info"
+    ></div>
+
+
+    <!-- =========================================
+         قائمة الملفات
+         ========================================= -->
+
+    <div
+        id="filesList"
+        class="files-list"
+    >
+
+        <div class="empty-message">
+
+            لا توجد ملفات
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================
+         اسم الملف
+         ========================================= -->
+
+    <span
+        id="filenameDisplay"
+        class="filename"
+    >
+
+        اسم الملف:
+
+    </span>
+
+
+    <!-- =========================================
+         محتوى الملف
+         ========================================= -->
+
+    <div
+        id="fileContentDisplay"
+        class="content-area"
+    ></div>
+
+
+    <!-- =========================================
+         أزرار العمليات
+         ========================================= -->
+
+    <div class="buttons-container">
+
+
+        <button
+            onclick="copyContent()"
+        >
+
+            <i class="fas fa-copy"></i>
+
+            نسخ المحتوى
+
+        </button>
+
+
+        <button
+            onclick="downloadFile()"
+        >
+
+            <i class="fas fa-download"></i>
+
+            تنزيل الملف
+
+        </button>
+
+
+    </div>
+
+
+    <!-- =========================================
+         رسالة الحالة
+         ========================================= -->
+
+    <div
+        id="statusMessage"
+        class="status-message"
+    ></div>
+
+
+</div>
+
+
+
+<script>
+
+
+/*
+========================================================
+                    DEFAULT FILES
+========================================================
+
+ضع جميع ملفاتك الافتراضية هنا.
+
+يمكنك إضافة عدد غير محدود من الملفات.
+
+كل ملف:
+
+{
+    name: "اسم الملف",
+    content: `محتوى الملف`
+}
+
+========================================================
+*/
+
+
+const defaultFiles = [
+
+
+    /*
+    ====================================================
+    تزامن.ض
+    ====================================================
+    */
+
+    {
+        name: "تزامن.ض",
+
+        content: `
+
+تحميل "threads.ring"
+
+دالة الأساس
+لو اختبار_الاستخدام
+    خيط = خيط_جديد()
+    شغل_خيط(خيط, "مرحبا()")
+    النتيجة = انتظر_خيط(خيط)
+        خ = خيط_جديد()
+    شغل_خيط(خ, "اسم(:حسن)")
+    النتيجة = انتظر_خيط(خ)
+
+    ? "تم. النتيجة = " + النتيجة
+تم
+
+
+دالة خيط_جديد
+    مرر new_thrd_t()
+
+دالة شغل_خيط خ, اسم_الدالة     thrd_create(خ, اسم_الدالة)
+
+دالة انتظر_خيط خ
+    ن = 0     thrd_join(خ, :ن)
+    مرر ن
+
+دالة مرحبا
+    ? "رسالة من الدالة مرحبا()"
+    مرر 123
+    
+دالة اسم كلم
+    ? "رسالة " + كلم
+    
+`
+    },
+
+
+
+
+    /*
+    ====================================================
+   
+
+    مثال Markdown افتراضي
+    ====================================================
+    */
+
+    {
+        name: "تزامن.فكر",
+
+        content: `
+
+التزامن في threads.ring
+
+تسمح threads.ring بتشغيل أكثر من مهمة في نفس الوقت باستخدام الخيوط (Threads).
+
+بدلًا من تنفيذ المهام واحدة تلو الأخرى، يمكن إنشاء خيط لكل مهمة وتشغيلها بشكل متزامن، ثم انتظار انتهاء الخيوط والحصول على نتائجها.
+
+ما هو التزامن؟
+
+التزامن يعني أن البرنامج يستطيع تشغيل أكثر من مهمة بحيث تتقدم المهام معًا بدل انتظار انتهاء مهمة بالكامل قبل بدء المهمة التالية.
+
+مثال بسيط:
+
+المهمة الأولى ────────▶
+المهمة الثانية ───────▶
+المهمة الثالثة ───────▶
+
+
+بدل:
+
+المهمة الأولى ────────▶
+                       المهمة الثانية ────────▶
+                                                المهمة الثالثة ────────▶
+
+
+وهذا يكون مفيدًا عند التعامل مع مهام مستقلة عن بعضها.
+
+إنشاء خيط
+
+لإنشاء خيط جديد نستخدم:
+
+خيط = خيط_جديد()
+
+
+والدالة تقوم بإنشاء كائن Thread جديد:
+
+دالة خيط_جديد
+    مرر new_thrd_t()
+
+تشغيل مهمة داخل الخيط
+
+بعد إنشاء الخيط، نستخدم:
+
+شغل_خيط(خيط, "مرحبا()")
+
+
+وتقوم الدالة باستدعاء:
+
+thrd_create(خيط, اسم_الدالة)
+
+
+أي أن الدالة مرحبا() سيتم تشغيلها داخل الخيط.
+
+انتظار انتهاء الخيط
+
+إذا أردنا انتظار انتهاء الخيط والحصول على النتيجة:
+
+النتيجة = انتظر_خيط(خيط)
+
+
+والدالة تستخدم:
+
+دالة انتظر_خيط خ
+    ن = 0
+    thrd_join(خ, :ن)
+    مرر ن
+
+
+الدالة thrd_join() تجعل البرنامج ينتظر حتى ينتهي الخيط.
+
+مثال بسيط
+
+لدينا دالة ترجع الرقم 123:
+
+دالة مرحبا
+    ? "رسالة من الدالة مرحبا()"
+    مرر 123
+
+
+ننشئ خيطًا ونشغل الدالة بداخله:
+
+خيط = خيط_جديد()
+
+شغل_خيط(خيط, "مرحبا()")
+
+النتيجة = انتظر_خيط(خيط)
+
+? "تم. النتيجة = " + النتيجة
+
+
+النتيجة:
+
+رسالة من الدالة مرحبا()
+تم. النتيجة = 123
+
+تشغيل أكثر من خيط
+
+يمكن إنشاء عدة خيوط وتشغيلها معًا:
+
+خ1 = خيط_جديد()
+خ2 = خيط_جديد()
+
+شغل_خيط(خ1, "مهمة1()")
+شغل_خيط(خ2, "مهمة2()")
+
+نتيجة1 = انتظر_خيط(خ1)
+نتيجة2 = انتظر_خيط(خ2)
+
+? نتيجة1
+? نتيجة2
+
+
+هنا يتم إنشاء خيطين:
+
+الخيط الرئيسي
+     │
+     ├── خيط 1 ──▶ مهمة1()
+     │
+     └── خيط 2 ──▶ مهمة2()
+
+
+الخيطان يمكن أن يتقدما بشكل متزامن.
+
+تمرير معاملات إلى الدالة
+
+يمكن تشغيل دالة مع معامل:
+
+خ = خيط_جديد()
+
+شغل_خيط(خ, "اسم(:حسن)")
+
+النتيجة = انتظر_خيط(خ)
+
+
+والدالة:
+
+دالة اسم كلم
+    ? "رسالة " + كلم
+
+
+الناتج:
+
+رسالة حسن
+
+دورة حياة الخيط
+
+يمكن تلخيص دورة الخيط كالتالي:
+
+        خيط_جديد()
+             │
+             ▼
+       إنشاء الخيط
+             │
+             ▼
+       شغل_خيط()
+             │
+             ▼
+      تشغيل المهمة
+             │
+             ▼
+       انتهاء الخيط
+             │
+             ▼
+       انتظر_خيط()
+             │
+             ▼
+          النتيجة
+
+لماذا نستخدم التزامن؟
+
+التزامن مفيد عندما تكون لدينا عدة مهام مستقلة.
+
+مثلًا:
+
+تحميل عدة ملفات.
+تنفيذ عمليات حسابية مستقلة.
+معالجة عدة طلبات.
+تنفيذ مهام في الخلفية.
+تشغيل عمليات تستغرق وقتًا طويلًا دون إيقاف بقية البرنامج.
+التزامن ليس دائمًا أسرع
+
+استخدام Threads لا يعني أن البرنامج سيكون أسرع دائمًا.
+
+إذا كانت المهام تعتمد على بعضها:
+
+المهمة 1
+   │
+   ▼
+المهمة 2
+   │
+   ▼
+المهمة 3
+
+
+فليس هناك فائدة كبيرة من تشغيلها بشكل متزامن، لأن كل مهمة تحتاج نتيجة المهمة السابقة.
+
+أما إذا كانت المهام مستقلة:
+
+        ┌── المهمة 1
+        │
+البداية ├── المهمة 2
+        │
+        └── المهمة 3
+
+
+فهنا يمكن أن يكون استخدام Threads مفيدًا.
+
+الخلاصة
+
+واجهة threads.ring توفر ثلاث عمليات أساسية:
+
+الدالة	الوظيفة
+خيط_جديد()	إنشاء خيط جديد
+شغل_خيط()	تشغيل دالة داخل الخيط
+انتظر_خيط()	انتظار الخيط والحصول على النتيجة
+
+والنمط الأساسي هو:
+
+خيط = خيط_جديد()
+
+شغل_خيط(خيط, "الدالة()")
+
+النتيجة = انتظر_خيط(خيط)
+
+
+بهذه الطريقة يمكن بناء برامج Ring تستخدم التزامن والخيوط لتنفيذ عدة مهام بشكل متزامن.
+`
+    }
+
+];
+
+
+
+/*
+========================================================
+                    جميع الملفات
+========================================================
+
+يبدأ النظام بالملفات الافتراضية.
+
+ثم تضاف ملفات المستخدم إليها.
+
+========================================================
+*/
+
+let files = [...defaultFiles];
+
+
+
+/*
+========================================================
+                    الملف الحالي
+========================================================
+*/
+
+let currentFileIndex = 0;
+
+
+
+/*
+========================================================
+                    عناصر الصفحة
+========================================================
+*/
+
+const fileInput =
+    document.getElementById("fileInput");
+
+
+const filesList =
+    document.getElementById("filesList");
+
+
+const fileContentDisplay =
+    document.getElementById(
+        "fileContentDisplay"
+    );
+
+
+const filenameDisplay =
+    document.getElementById(
+        "filenameDisplay"
+    );
+
+
+const statusMessageElement =
+    document.getElementById(
+        "statusMessage"
+    );
+
+
+const filesInfo =
+    document.getElementById(
+        "filesInfo"
+    );
+
+
+
+/*
+========================================================
+                    تشغيل الصفحة
+========================================================
+*/
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        renderFilesList();
+
+        selectFile(0);
+
+    }
+);
+
+
+
+/*
+========================================================
+                    إضافة ملفات
+========================================================
+*/
+
+fileInput.addEventListener(
+    "change",
+    async function(event) {
+
+
+        const selectedFiles =
+            Array.from(
+                event.target.files
+            );
+
+
+        if (
+            selectedFiles.length === 0
+        ) {
+
+            return;
+
+        }
+
+
+        let addedCount = 0;
+
+
+        for (
+            const file
+            of selectedFiles
+        ) {
+
+
+            try {
+
+
+                /*
+                قراءة الملف كنص
+                */
+
+                const content =
+                    await file.text();
+
+
+                /*
+                البحث عن ملف بنفس الاسم
+                */
+
+                const existingIndex =
+                    files.findIndex(
+                        function(item) {
+
+                            return (
+                                item.name ===
+                                file.name
+                            );
+
+                        }
+                    );
+
+
+                /*
+                إذا كان الملف موجودًا
+                نستبدل محتواه
+                */
+
+                if (
+                    existingIndex !== -1
+                ) {
+
+
+                    files[
+                        existingIndex
+                    ] = {
+
+                        name:
+                            file.name,
+
+                        content:
+                            content,
+
+                        userFile:
+                            true
+
+                    };
+
+
+                }
+
+
+                /*
+                إذا كان ملفًا جديدًا
+                */
+
+                else {
+
+
+                    files.push({
+
+                        name:
+                            file.name,
+
+                        content:
+                            content,
+
+                        userFile:
+                            true
+
+                    });
+
+                }
+
+
+                addedCount++;
+
+
+            }
+
+
+            catch (error) {
+
+
+                console.error(
+                    error
+                );
+
+
+                showStatusMessage(
+                    "تعذر قراءة الملف: " +
+                    file.name
+                );
+
+            }
+
+        }
+
+
+        /*
+        تحديث القائمة
+        */
+
+        renderFilesList();
+
+
+        /*
+        تحديد آخر ملف
+        */
+
+        if (
+            addedCount > 0
+        ) {
+
+
+            const lastFile =
+                selectedFiles[
+                    selectedFiles.length - 1
+                ];
+
+
+            const index =
+                files.findIndex(
+                    function(item) {
+
+                        return (
+                            item.name ===
+                            lastFile.name
+                        );
+
+                    }
+                );
+
+
+            if (index !== -1) {
+
+                selectFile(index);
+
+            }
+
+        }
+
+
+        showStatusMessage(
+            "تمت إضافة " +
+            addedCount +
+            " ملف بنجاح!"
+        );
+
+
+        /*
+        السماح باختيار نفس الملف
+        مرة أخرى
+        */
+
+        fileInput.value = "";
+
+    }
+);
+
+
+
+/*
+========================================================
+                    رسم قائمة الملفات
+========================================================
+*/
+
+function renderFilesList() {
+
+
+    filesList.innerHTML = "";
+
+
+    if (
+        files.length === 0
+    ) {
+
+
+        filesList.innerHTML =
+            '<div class="empty-message">' +
+            'لا توجد ملفات' +
+            '</div>';
+
+
+        return;
+
+    }
+
+
+    files.forEach(
+        function(file, index) {
+
+
+            const fileButton =
+                document.createElement(
+                    "div"
+                );
+
+
+            fileButton.className =
+                "file-item";
+
+
+            /*
+            الملف المحدد
+            */
+
+            if (
+                index ===
+                currentFileIndex
+            ) {
+
+                fileButton.classList.add(
+                    "active"
+                );
+
+            }
+
+
+            /*
+            ملفات default
+            */
+
+            if (
+                index <
+                defaultFiles.length
+            ) {
+
+                fileButton.classList.add(
+                    "default-file"
+                );
+
+            }
+
+
+            /*
+            الأيقونة
+            */
+
+            const icon =
+                document.createElement(
+                    "i"
+                );
+
+
+            if (
+                isMarkdownFile(
+                    file.name
+                )
+            ) {
+
+                icon.className =
+                    "fab fa-markdown";
+
+            }
+
+            else {
+
+                icon.className =
+                    "fas fa-file-code";
+
+            }
+
+
+            /*
+            اسم الملف
+            */
+
+            const name =
+                document.createElement(
+                    "span"
+                );
+
+
+            name.textContent =
+                file.name;
+
+
+            fileButton.appendChild(
+                icon
+            );
+
+
+            fileButton.appendChild(
+                name
+            );
+
+
+            /*
+            عند الضغط
+            */
+
+            fileButton.onclick =
+                function() {
+
+                    selectFile(index);
+
+                };
+
+
+            filesList.appendChild(
+                fileButton
+            );
+
+        }
+    );
+
+
+    /*
+    حساب عدد الملفات
+    */
+
+    const defaultCount =
+        Math.min(
+            defaultFiles.length,
+            files.length
+        );
+
+
+    const addedCount =
+        Math.max(
+            0,
+            files.length -
+            defaultCount
+        );
+
+
+    filesInfo.textContent =
+        "الافتراضية: " +
+        defaultCount +
+        " | المضافة: " +
+        addedCount +
+        " | المجموع: " +
+        files.length;
+
+}
+
+
+
+/*
+========================================================
+                    اختيار الملف
+========================================================
+*/
+
+function selectFile(index) {
+
+
+    if (
+        !files[index]
+    ) {
+
+        return;
+
+    }
+
+
+    currentFileIndex =
+        index;
+
+
+    const file =
+        files[index];
+
+
+    /*
+    اسم الملف
+    */
+
+    filenameDisplay.textContent =
+        "اسم الملف: " +
+        file.name;
+
+
+    /*
+    Markdown
+    */
+
+    if (
+        isMarkdownFile(
+            file.name
+        )
+    ) {
+
+
+        fileContentDisplay.classList.add(
+            "markdown-preview"
+        );
+
+
+        /*
+        التأكد أن marked موجودة
+        */
+
+        if (
+            typeof marked !==
+            "undefined"
+        ) {
+
+
+            fileContentDisplay.innerHTML =
+                marked.parse(
+                    file.content
+                );
+
+
+        }
+
+
+        else {
+
+
+            fileContentDisplay.textContent =
+                file.content;
+
+        }
+
+    }
+
+
+    /*
+    ملفات عادية
+    */
+
+    else {
+
+
+        fileContentDisplay.classList.remove(
+            "markdown-preview"
+        );
+
+
+        fileContentDisplay.textContent =
+            file.content;
+
+    }
+
+
+    /*
+    إعادة رسم القائمة
+    */
+
+    renderFilesList();
+
+}
+
+
+
+/*
+========================================================
+                    هل الملف Markdown؟
+========================================================
+*/
+
+function isMarkdownFile(
+    filename
+) {
+
+
+    const name =
+        filename.toLowerCase();
+
+
+    return (
+        name.endsWith(".md") ||
+        name.endsWith(".markdown") ||
+        name.endsWith(".ضوء") 
+    );
+
+}
+
+
+
+/*
+========================================================
+                    نسخ المحتوى
+========================================================
+*/
+
+async function copyContent() {
+
+
+    const file =
+        files[currentFileIndex];
+
+
+    if (!file) {
+
+        return;
+
+    }
+
+
+    try {
+
+
+        /*
+        نسخ النص الأصلي
+        وليس HTML
+        */
+
+        await navigator.clipboard.writeText(
+            file.content
+        );
+
+
+        showStatusMessage(
+            "تم نسخ محتوى " +
+            file.name +
+            " بنجاح!"
+        );
+
+
+    }
+
+
+    catch (error) {
+
+
+        console.error(
+            error
+        );
+
+
+        /*
+        طريقة احتياطية
+        */
+
+        try {
+
+
+            const textarea =
+                document.createElement(
+                    "textarea"
+                );
+
+
+            textarea.value =
+                file.content;
+
+
+            textarea.style.position =
+                "fixed";
+
+
+            textarea.style.opacity =
+                "0";
+
+
+            document.body.appendChild(
+                textarea
+            );
+
+
+            textarea.select();
+
+
+            document.execCommand(
+                "copy"
+            );
+
+
+            document.body.removeChild(
+                textarea
+            );
+
+
+            showStatusMessage(
+                "تم نسخ المحتوى بنجاح!"
+            );
+
+
+        }
+
+
+        catch (e) {
+
+
+            showStatusMessage(
+                "فشل في نسخ المحتوى."
+            );
+
+        }
+
+    }
+
+}
+
+
+
+/*
+========================================================
+                    تنزيل الملف
+========================================================
+*/
+
+function downloadFile() {
+
+
+    const file =
+        files[currentFileIndex];
+
+
+    if (!file) {
+
+        return;
+
+    }
+
+
+    const blob =
+        new Blob(
+            [
+                file.content
+            ],
+            {
+                type:
+                    "text/plain;charset=utf-8"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+
+    const a =
+        document.createElement(
+            "a"
+        );
+
+
+    a.href =
+        url;
+
+
+    a.download =
+        file.name;
+
+
+    document.body.appendChild(
+        a
+    );
+
+
+    a.click();
+
+
+    document.body.removeChild(
+        a
+    );
+
+
+    URL.revokeObjectURL(
+        url
+    );
+
+
+    showStatusMessage(
+        "جاري تنزيل " +
+        file.name +
+        "..."
+    );
+
+}
+
+
+
+/*
+========================================================
+              حذف الملفات المضافة
+========================================================
+
+لا نحذف defaultFiles.
+
+نرجع فقط إلى الملفات الافتراضية.
+
+========================================================
+*/
+
+function clearAddedFiles() {
+
+
+    files =
+        [...defaultFiles];
+
+
+    currentFileIndex =
+        0;
+
+
+    renderFilesList();
+
+
+    selectFile(0);
+
+
+    showStatusMessage(
+        "تم حذف الملفات المضافة."
+    );
+
+}
+
+
+
+/*
+========================================================
+                    رسالة الحالة
+========================================================
+*/
+
+function showStatusMessage(
+    message
+) {
+
+
+    statusMessageElement.textContent =
+        message;
+
+
+    statusMessageElement.style.display =
+        "block";
+
+
+    setTimeout(
+        function() {
+
+            statusMessageElement.style.display =
+                "none";
+
+        },
+        3000
+    );
+
+}
+
+
+</script>
+
+</body>
+
+</html>
+
